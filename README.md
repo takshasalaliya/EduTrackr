@@ -4,13 +4,7 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://packagist.org/packages/takshasalaliya/EduTrackr"><img src="https://img.shields.io/packagist/dt/takshasalaliya/EduTrackrt" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/your-username/semcom-campusconnect"><img src="https://img.shields.io/packagist/v/your-username/semcom-campusconnect" alt="Latest Stable Version"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/packagist/l/your-username/semcom-campusconnect" alt="License"></a>
-</p>
-
-<h1 align="center">SEMCOM CampusConnect</h1>
+<h1 align="center">EduTrackr</h1>
 
 <p align="center">
   A Laravel 11–based academic management platform to streamline administrative, counseling, teaching, and student workflows for a college.
@@ -20,7 +14,7 @@
 
 ## 📖 Overview
 
-SEMCOM CampusConnect is a role-based academic management system built with Laravel 11, PHP 8+, MySQL, Tailwind CSS, and Vite. It provides four distinct dashboards—Admin, Counselor, Teacher, and Student—each secured by custom middleware to enforce access control. The platform handles bulk imports, attendance tracking, reporting, and notifications, reducing manual effort and ensuring data accuracy.
+EduTrackr is a role-based academic management system built with Laravel 11, PHP 8+, MySQL, Tailwind CSS, and Vite. It provides four distinct dashboards—Admin, Counselor, Teacher, and Student—each secured by custom middleware to enforce access control. The platform handles bulk imports, attendance tracking, reporting, and notifications, reducing manual effort and ensuring data accuracy.
 
 ---
 

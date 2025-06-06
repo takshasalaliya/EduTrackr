@@ -83,7 +83,7 @@
                                 <label class="form-label" for="leacture_select_att">Lecture Number <span class="text-danger">*</span></label> {{-- Typo "Leacture" kept --}}
                                 <select name="leacture" id="leacture_select_att" class="form-select @error('leacture') is-invalid @enderror" required>
                                     <option value="" disabled {{ !request('leacture') ? 'selected' : '' }}>Select Lecture</option>
-                                    @for ($i = 1; $i <= 10; $i++) {{-- Assuming up to 10 lectures per unit, adjust as needed --}}
+                                    @for ($i = 1; $i <= 6; $i++) {{-- Assuming up to 10 lectures per unit, adjust as needed --}}
                                     <option value="{{ $i }}" {{ request('leacture') == $i ? 'selected' : '' }}>Lecture {{ $i }}</option>
                                     @endfor
                                 </select>

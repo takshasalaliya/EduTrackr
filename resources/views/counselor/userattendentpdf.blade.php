@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Details - {{ $data->name ?? 'User' }}</title>
+    <title>Generating Report for {{ $data->name ?? 'User' }}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -20,172 +20,55 @@
             padding-top: 20px;
             padding-bottom: 40px;
         }
-        .logo-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .logo-header img {
-            max-width: 300px;
-            height: auto;
-        }
-        .dashboard-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-            margin-bottom: 25px;
-        }
-        .card-header-custom {
-            background-color: #0A2540;
-            color: #ffffff;
-            font-size: 1.25rem;
-            font-weight: 600;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            padding: 1rem 1.5rem;
-        }
-        .profile-details .row > div {
-            padding-bottom: 0.75rem;
-        }
-        .profile-details dt {
-            font-weight: 600;
-            color: #555;
-        }
-        .profile-details dd {
-            margin-bottom: 0;
-            color: #333;
-        }
-        .table thead th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-        }
-        .table tfoot th, .table tfoot td {
-            font-weight: bold;
-            background-color: #e9ecef;
-        }
+        .logo-header { text-align: center; margin-bottom: 20px; }
+        .logo-header img { max-width: 300px; height: auto; }
+        .dashboard-card { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07); margin-bottom: 25px; }
+        .card-header-custom { background-color: #0A2540; color: #ffffff; font-size: 1.25rem; font-weight: 600; border-top-left-radius: 12px; border-top-right-radius: 12px; padding: 1rem 1.5rem; }
+        .profile-details .row > div { padding-bottom: 0.75rem; }
+        .profile-details dt { font-weight: 600; color: #555; }
+        .profile-details dd { margin-bottom: 0; color: #333; }
+        .table thead th { background-color: #f8f9fa; font-weight: 600; color: #495057; }
+        .table tfoot th, .table tfoot td { font-weight: bold; background-color: #e9ecef; }
         .attendance-percentage.high { color: #198754; }
         .attendance-percentage.medium { color: #ffc107; }
         .attendance-percentage.low { color: #dc3545; }
+        .chart-container { position: relative; margin: auto; width: 100%; margin-bottom: 25px; }
+        .doughnut-chart-container { height: 300px; max-width: 400px; }
+        .bar-chart-container { height: 350px; }
 
-        .chart-container { /* General container for charts */
-            position: relative;
-            margin: auto;
-            width: 100%;
-            margin-bottom: 25px;
-        }
-        .doughnut-chart-container {
-            height: 300px; /* Specific height for doughnut */
-            max-width: 400px; /* Max width for doughnut */
-        }
-        .bar-chart-container {
-            height: 350px; /* Specific height for bar chart */
-        }
-
-        .action-buttons {
-            display: flex; /* Use flexbox for alignment */
-            justify-content: flex-end; /* Align buttons to the right */
-            gap: 10px; /* Space between buttons */
-            margin-bottom: 20px;
-        }
-
-
-        @media (max-width: 767.98px) {
-            .logo-header img {
-                max-width: 200px;
-            }
-            .doughnut-chart-container {
-                height: 250px;
-            }
-            .bar-chart-container {
-                height: 300px; /* Adjusted for smaller screens */
-            }
-            .action-buttons {
-                justify-content: center; /* Center buttons on smaller screens */
-                flex-wrap: wrap; /* Allow buttons to wrap if needed */
-            }
-        }
-        @media (max-width: 575.98px) { /* Extra small devices */
-            .bar-chart-container {
-                height: 350px; /* Potentially more height if many subjects and labels wrap */
-            }
-        }
-         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                padding-top: 0;
-                background-color: #fff; /* Ensure plain background for printing */
-            }
-            .dashboard-card {
-                box-shadow: none;
-                border: 1px solid #dee2e6; /* Add a light border for structure */
-                margin-bottom: 0;
-                width: 100% !important; /* Ensure card uses full printable width */
-            }
-            .container { /* Ensure container uses full width in print */
-                max-width: 100% !important;
-                width: 100% !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-            }
-            .card-header-custom { /* Ensure header prints well */
-                background-color: #f8f9fa !important;
-                color: #000 !important;
-                border-bottom: 1px solid #dee2e6;
-            }
-            /* Chart specific print styles */
-            .chart-container canvas {
-                max-width: 100% !important;
-                height: auto !important;
-            }
-            .bar-chart-container { /* Allow bar chart to use available width */
-                 width: 100% !important;
-            }
+        /* The no-print class is now used for the loading overlay and other non-report elements */
+        @media print {
+            .no-print { display: none !important; }
+            body { padding-top: 0; background-color: #fff; }
+            .dashboard-card { box-shadow: none; border: 1px solid #dee2e6; margin-bottom: 0; width: 100% !important; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; }
+            .card-header-custom { background-color: #f8f9fa !important; color: #000 !important; border-bottom: 1px solid #dee2e6; }
+            .chart-container canvas { max-width: 100% !important; height: auto !important; }
+            .bar-chart-container { width: 100% !important; }
         }
     </style>
 </head>
 <body>
 
+    <!-- NEW: Loading Overlay -->
+    <div id="loadingOverlay" class="no-print" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 fs-5">Generating PDF report...</p>
+        <p class="text-muted">Your download will start shortly, and you will be redirected.</p>
+    </div>
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10 col-xl-9">
 
-                <div class="logo-header no-print">
+                <!-- Logo remains for the PDF content -->
+                <div class="logo-header">
                     <img src="https://i.ibb.co/yFhzNxBJ/3-removebg-preview.png" alt="Semcom Logo">
                 </div>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons no-print">
-                    <a href="{{ url('/classattendent') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left-circle me-2"></i>Back
-                    </a>
-                    <button id="sendWhatsAppBtn" class="btn btn-success">
-                        <i class="bi bi-whatsapp me-2"></i>Send to Parent
-                    </button>
-                    <button id="downloadPdfBtn" class="btn btn-danger">
-                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Download PDF
-                    </button>
-                    <a href="{{ url('/student-detailemail/' . $data->student_id) }}" class="btn btn-secondary">
-                        <i class="bi bi-envelope-fill me-1"></i> Email Report
-                    </a>
-                </div>
-
-                <!-- Session Messages -->
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show no-print" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show no-print" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+                
+                <!-- Action Buttons and Session Messages have been removed -->
 
                 <div id="contentToPrint" class="dashboard-card">
                     <div class="card-header-custom text-center">
@@ -390,10 +273,10 @@
             const overallTotalLectureSlots = {{ $overall_total_lecture_slots }};
 
 
-            // Chart rendering logic... (No changes here)
+            // Chart rendering logic (This needs to run for the PDF to be correct)
             const overallDoughnutCtx = document.getElementById('overallAttendanceDoughnutChart');
             if (overallDoughnutCtx && (overallTotalLectureSlots > 0 || overallActivitiesAttended > 0)) {
-                new Chart(overallDoughnutCtx, { type: 'doughnut', data: { labels: ['Lectures Attended', 'Activities Attended', 'Lectures Missed'], datasets: [{ label: 'Overall Engagement', data: [overallLecturesAttended, overallActivitiesAttended, overallLecturesMissed], backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'], borderColor: ['rgba(75, 192, 192, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'top', }, title: { display: true, text: 'Overall Engagement Breakdown' }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { label += context.parsed; } return label; } } } } } });
+                new Chart(overallDoughnutCtx, { type: 'doughnut', data: { labels: ['Lectures Attended', 'Activities Attended', 'Lectures Missed'], datasets: [{ label: 'Overall Engagement', data: [overallLecturesAttended, overallActivitiesAttended, overallLecturesMissed], backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'], borderColor: ['rgba(75, 192, 192, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'], borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'top', }, title: { display: true, text: 'Overall Engagement Breakdown' } } } });
             }
             const combinedBarCtx = document.getElementById('combinedSubjectBarChart');
             if (combinedBarCtx && processedAttendDataJS && processedAttendDataJS.length > 0) {
@@ -403,63 +286,36 @@
                 new Chart(combinedBarCtx, { type: 'bar', data: { labels: subjectLabels, datasets: [ { label: 'Lectures Attended', data: attendedCounts, backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 }, { label: 'Lectures Absent', data: absentCounts, backgroundColor: 'rgba(255, 99, 132, 0.6)', borderColor: 'rgba(255, 99, 132, 1)', borderWidth: 1 } ] }, options: { responsive: true, maintainAspectRatio: false, animation: false, scales: { x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45 } }, y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { position: 'top', }, title: { display: true, text: 'Subject-wise Lecture Attendance Counts' } } } });
             }
 
-            // PDF Download Functionality (No changes here)
-            const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-            if (downloadPdfBtn) {
-                downloadPdfBtn.addEventListener('click', function() {
-                    const elementToPrint = document.getElementById('contentToPrint');
-                    const studentName = "{{ $data->name ?? 'Student' }}";
-                    const enrollmentNumber = "{{ $data->enrollment_number ?? 'UnknownEnrollment' }}";
-                    const filename = `student_details_${enrollmentNumber}_${studentName.replace(/\s+/g, '_')}.pdf`;
-                    downloadPdfBtn.disabled = true;
-                    downloadPdfBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating PDF...';
-                    const opt = { margin: [0.5, 0.5, 0.5, 0.5], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true, scrollX: 0, scrollY: 0, windowWidth: document.documentElement.scrollWidth, windowHeight: document.documentElement.scrollHeight }, jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }, pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } };
-                    html2pdf().from(elementToPrint).set(opt).save().then(function() {
-                         downloadPdfBtn.disabled = false;
-                         downloadPdfBtn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Download PDF';
-                    }).catch(function(error) {
-                        console.error("Error generating PDF:", error);
-                        downloadPdfBtn.disabled = false;
-                        downloadPdfBtn.innerHTML = '<i class="bi bi-file-earmark-pdf-fill me-2"></i>Download PDF';
-                        alert("Sorry, an error occurred while generating the PDF. Check the console for details.");
-                    });
+            // --- AUTOMATIC PDF DOWNLOAD AND REDIRECT SCRIPT ---
+            function triggerAutoDownloadAndRedirect() {
+                const elementToPrint = document.getElementById('contentToPrint');
+                const studentName = "{{ $data->name ?? 'Student' }}";
+                const enrollmentNumber = "{{ $data->enrollment_number ?? 'UnknownEnrollment' }}";
+                const filename = `student_details_${enrollmentNumber}_${studentName.replace(/\s+/g, '_')}.pdf`;
+                
+                const opt = {
+                    margin:       [0.5, 0.5, 0.5, 0.5], // inches
+                    filename:     filename,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, logging: false, letterRendering: true, scrollX: 0, scrollY: 0, windowWidth: document.documentElement.scrollWidth, windowHeight: document.documentElement.scrollHeight },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+
+                // Generate and save the PDF. After saving, redirect.
+                html2pdf().from(elementToPrint).set(opt).save().then(function() {
+                    // Success: PDF download has started. Redirect to home.
+                    window.location.href = '/';
+                }).catch(function(error) {
+                    // Error Handling: Inform the user and then redirect.
+                    console.error("Error generating PDF:", error);
+                    alert("Sorry, an error occurred while generating the PDF. You will now be redirected.");
+                    window.location.href = '/';
                 });
             }
 
-            // --- WHATSAPP SCRIPT (UPDATED) ---
-            const sendWhatsAppBtn = document.getElementById('sendWhatsAppBtn');
-            if (sendWhatsAppBtn) {
-                sendWhatsAppBtn.addEventListener('click', function() {
-                    // **MODIFIED: Using the parent's phone number variable**
-                    // This should include the country code but no '+' or spaces. e.g., 919876543210
-                    const phoneNumber = "{{ $data->parents_phone_number ?? '' }}"; 
-                    
-                    const studentName = "{{ $data->name ?? 'Student' }}";
-                    const enrollmentNumber = "{{ $data->enrollment_number ?? 'N/A' }}";
-                    const pageUrl = "{{ 'http://127.0.0.1:8000/student-detail/'.$data->student_id }}";
-
-                    // Construct the message
-                    let messageText = `Dear Parent,\n\nPlease find the attendance and activity report for your ward *${studentName}* (Enrollment: ${enrollmentNumber}).\n\n`;
-                    messageText += `You can view the detailed report here:\n${pageUrl}\n\nRegards,\nSemcom College`;
-
-                    // URL-encode the message for the link
-                    const encodedMessage = encodeURIComponent(messageText);
-                    
-                    let whatsappUrl;
-
-                    // Create the URL with or without a phone number
-                    if (phoneNumber) {
-                        whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-                    } else {
-                        // If no number is found, show an alert and don't proceed.
-                        alert('Parent phone number not available for this student.');
-                        return; // Stop the function here
-                    }
-
-                    // Open the WhatsApp link in a new tab
-                    window.open(whatsappUrl, '_blank');
-                });
-            }
+            // A small timeout allows the charts to fully render before we trigger the PDF generation.
+            setTimeout(triggerAutoDownloadAndRedirect, 1000); // 1-second delay
         });
     </script>
 </body>

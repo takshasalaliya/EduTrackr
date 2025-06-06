@@ -15,6 +15,7 @@ use App\Models\Teaching_staff;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\professor;
+use App\Mail\Attendantmail;
 use Illuminate\Support\Carbon; 
 use App\Imports\StudentImport;
 use Excel;
@@ -471,10 +472,61 @@ class CounselorController extends Controller
     function optional_list(){
         try {
             $data=Optional_subject::with('student','subject.student_class.program')->get();
+            $datas=[];
+            $subjects=[];
+            $classes=Student_class::where('coundelor_id',Auth::user()->id)->get();
+            foreach($classes as $class){
+                foreach($data as $std){
+                    if($std->student->class_id==$class->id){
+                        $datas[]=$std;
+                    }
+                }
+
+                $subject=Subject::where('class_id',$class->id)->where('category','optional')->get();
+                $subjects[]=$subject;
+            }
+
+            // return $datas;
+            // return $subjects;
             return view('counselor/optional_subject_list',[
-                'datas' => $data,
+                'datas' => $datas,
+                'subjects_for_filter' => $subjects,
             ]);
         } catch (\Throwable $e) {
+            return redirect()->back()->with('error','Error: '.$e->getMessage());
+        }
+    }
+
+
+    function filter_optionalsuject(Request $request){
+        try{
+            if($request->filter!=""){
+             $data=Optional_subject::with('student','subject.student_class.program')->where('subject_id',$request->filter)->get();
+            }else{
+             $data=Optional_subject::with('student','subject.student_class.program')->get();
+            }
+            $datas=[];
+            $subjects=[];
+            $classes=Student_class::where('coundelor_id',Auth::user()->id)->get();
+            foreach($classes as $class){
+                foreach($data as $std){
+                    if($std->student->class_id==$class->id){
+                        $datas[]=$std;
+                    }
+                }
+
+                $subject=Subject::where('class_id',$class->id)->where('category','optional')->get();
+                $subjects[]=$subject;
+            }
+
+            // return $datas;
+            // return $subjects;
+            return view('counselor/optional_subject_list',[
+                'datas' => $datas,
+                'subjects_for_filter' => $subjects,
+            ]);
+
+        }catch (\Throwable $e) {
             return redirect()->back()->with('error','Error: '.$e->getMessage());
         }
     }
@@ -686,6 +738,8 @@ class CounselorController extends Controller
                 }
                 $valid= array_unique($valid);
             }
+
+
             return view('counselor/attendent_list',[
                 'subject' => $subject,
                 'student'=>$student,
@@ -853,14 +907,17 @@ class CounselorController extends Controller
 $to = Carbon::parse(end($date))->toDateString();        // "2025-06-05"
 // return $from;
 $activity = Activity::where('std_id', $student->student_id)
-    ->whereBetween('created_at', [$from . ' 00:00:00', $to . ' 23:59:59'])
-    ->get(); 
-$activitys = 0;
+->whereDate('from_date', '>=', $from)
+->whereDate('to_date', '<=', $to)
+->get();   
+// return $activity;
+                        $activitys=0;
                     foreach($activity as $act){
                         $activitys+=$act->session;
                     }
                     // return $activitys;
                     $percentage = ($classCount == 0) ? '0' : number_format(($total + $activitys) / $classCount * 100, 2);
+
                         $data[]=$student->enrollment_number.'&'.$student->name.'&'.$from.'&'.$to.'&'.$classCount.'&'.$total.'&'.$percentage;
                     }
                 }
@@ -903,14 +960,19 @@ $activitys = 0;
                     sort($date);
                     $from=explode(' ',$date[0]);
                     $to=explode(' ',end($date));
-                    $activity=Activity::where('std_id',$student->student_id)->whereBetween('created_at', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59'])->get();
+                    $activity = Activity::where('std_id', $student->student_id)
+                    ->whereDate('from_date', '>=', $fromDate)
+                    ->whereDate('to_date', '<=', $toDate)
+                    ->get();                
                     // return $activity;
                     $activitys=0;
                     foreach($activity as $act){
                         $activitys+=$act->session;
                     }
                     // return $activitys;
+                    // return $total; 
                     $percentage = ($classCount == 0) ? '0' : number_format(($total + $activitys) / $classCount * 100, 2);
+                    // return $percentage;
                     $data[]=$student->enrollment_number.'&'.$student->name.'&'.$from[0].'&'.$to[0].'&'.$classCount.'&'.$total.'&'.$percentage;
                 }
             }
@@ -962,7 +1024,10 @@ $activitys = 0;
                     sort($date);
                     $from=explode(' ',$date[0]);
                     $to=explode(' ',end($date));
-                    $activity=Activity::where('std_id',$student->student_id)->whereBetween('created_at', [$fromss . ' 00:00:00', $toss . ' 23:59:59'])->get();
+                    $activity = Activity::where('std_id', $student->student_id)
+                    ->whereDate('from_date', '>=', $fromss)
+                    ->whereDate('to_date', '<=', $toss)
+                    ->get();   
                     $activitys=0;
                     foreach($activity as $act){
                         $activitys+=$act->session;
@@ -1095,6 +1160,7 @@ $activitys = 0;
               }
               $activity=Activity::with(['student'])->where('std_id',$user->student_id)->get();
             //   return $attend;
+            // return $user;
             return view('counselor/userattendent',[
                 'data' => $user,
                 'attend' => $attend,
@@ -1105,5 +1171,23 @@ $activitys = 0;
         }catch (\Throwable $e) {
             return redirect()->back()->with('error','Error: '.$e->getMessage());
         }
+    }
+
+    function student_detailemail($id){
+      try{
+        $link = "http://127.0.0.1:8000/student-detail/".$id;
+        $message = [
+            'message' => $link,
+        ];
+
+
+        $user=Student::where('student_id',$id)->first();
+    $subject="Attendance Update & Important Reminder";
+
+    $mail=Mail::to($user->parents_email)->send(new Attendantmail($message,$subject));   
+    return redirect()->back()->with('success','Email Send Successfully');
+}catch (\Throwable $e) {
+    return redirect()->back()->with('error','Error: '.$e->getMessage());
+}
     }
 }

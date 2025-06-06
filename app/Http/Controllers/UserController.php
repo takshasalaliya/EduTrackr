@@ -163,5 +163,69 @@ function usersubmit(Request $request){
    
 }
 
+public function student_detail($id){
+    try{
+        $user=Student::with('class.program')->where('enrollment_number',$id)->first();
+        
+        $subject=Subject::where('class_id',$user->class_id)->where('category','required')->get();
+        $optionalsubject=Optional_subject::with('subject')->where('student_id',$user->student_id)->get();    
+          $attend=collect();
+          $finalattend=null;
+          $totallecture=0;
+          $totalpresent=0;
+          foreach ($subject as $sub){
+              $record=Teaching_staff::with(['subject','teacher'])->where('subject_id',$sub->subject_id)->get();
+              $present=0;
+              $all=0;
+              foreach ($record as $reco){
+                  $attenddata=Attendence::with('teaching_staff.teacher')->where('staff_id',$reco->id)->where('student_id',$user->student_id)->get();
+                  foreach ($attenddata as $final){
+                      if($final->attendance=='present'){
+                          $present++;
+                          $totalpresent++;
+                      }
+                      $all++;
+                      $totallecture++;
+                  }
+              }
+              $per=$present==0?'0': number_format(($present / $all) * 100, 2);
+              $finalsub=$sub->subject_name.'@'.$present.'/'.$all.'@'.$per.'@'.$all.'@'.$sub->short_name;
+               $attend=$attend->merge($finalsub);
+          }
+          
+           foreach ($optionalsubject as $sub){
+              $record=Teaching_staff::with(['subject','teacher'])->where('subject_id',$sub->subject->subject_id)->get();
+              $present=0;
+              $all=0;
+              foreach ($record as $reco){
+                  $attenddata=Attendence::with('teaching_staff.teacher')->where('staff_id',$reco->id)->where('student_id',$user->student_id)->get();
+                  foreach ($attenddata as $final){
+                      if($final->attendance=='present'){
+                          $present++;
+                          $totalpresent++;
+                      }
+                      $all++;
+                      $totallecture++;
+                  }
+              }
+              $per=$present==0?'0': number_format(($present / $all) * 100, 2);
+              $finalsub=$sub->subject->subject_name.'@'.$present.'/'.$all.'@'.$per.'@'.$all.'@'.$sub->subject->short_name;
+               $attend=$attend->merge($finalsub);
+          }
+          $activity=Activity::with(['student'])->where('std_id',$user->student_id)->get();
+        //   return $attend;
+        // return $user;
+        return view('counselor/userattendentpdf',[
+            'data' => $user,
+            'attend' => $attend,
+            'lecture' => $totallecture,
+            'present' => $totalpresent,
+            'activity_participation' => $activity,
+        ]);
+    }catch (\Throwable $e) {
+        return redirect()->back()->with('error','Error: '.$e->getMessage());
+    }
+}
+
 
 }

@@ -77,92 +77,169 @@
     </div>
 
 
-    @if(isset($student)) {{-- Changed from $student to $attendance_summary --}}
+    @if(isset($student))
     <div class="card card-custom">
-        <div class="card-header">
-            <i class="bi bi-table me-2"></i>Student Attendance Summary for Selected Subject
+        {{-- MODIFIED: Card header now includes a search input --}}
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <i class="bi bi-table me-2"></i>Student Attendance Summary for Selected Subject
+            </div>
+            <div class="ms-auto" style="max-width: 300px;">
+                <input type="text" id="liveSearchInput" class="form-control form-control-sm" placeholder="Search by Enrollment or Name...">
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0">
+                {{-- MODIFIED: Added ID to table --}}
+                <table class="table table-hover table-striped mb-0" id="attendanceTable">
                     <thead class="table-light">
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Enrollment No.</th>
+                            {{-- MODIFIED: Made Enrollment header sortable --}}
+                            <th scope="col" id="enrollmentHeader" style="cursor: pointer;">
+                                Enrollment No. <i class="bi bi-arrow-down-up small text-muted"></i>
+                            </th>
                             <th scope="col">Student Name</th>
                             <th scope="col" class="text-center">Total Lectures</th>
                             <th scope="col">First Attended</th>
                             <th scope="col">Last Attended</th>
                             <th scope="col" class="text-center">Present</th>
                             <th scope="col" class="text-center">Attendance %</th>
-                            <th scope="col" class="text-center">Action</th>
+                           
                         </tr>
                     </thead>
-                    <tbody>
+                    {{-- MODIFIED: Added ID to tbody --}}
+                    <tbody id="attendanceTableBody">
                     @php
                     $num=0;
                     @endphp
-                        {{-- Data processing logic (calculating sum, present, percentage, dates)
-                             MUST BE MOVED TO THE CONTROLLER.
-                             The controller should pass $attendance_summary as a collection of objects,
-                             where each object already has these calculated values.
-                        --}}
+                        {{-- Data processing logic remains UNCHANGED as requested --}}
                         @foreach($valid as $data)
-<tr>
-<?php
-$sum=0;
-$present=0;
-$enter=0;
-$date=[];
-foreach ($student as $d) {
-    if ($d->student->enrollment_number == $data && $d->staff_id == $id) {
-        $date[]=$d->created_at;
-        $sum++;
-        $to=explode(" ",$d->created_at);
-        $name=$d->student->name;
-        $message=$d->student->student_id;
-        if($d->attendance=='present'){
-            $present++;
-        }
-    }
-
-    
-}
-sort($date);
-$from=$date[0]; 
-$from=explode(" ",$from);
-$to = end($date);
-$to=explode(" ",$to);
-$pertentage=number_format($present/$sum*100,2);
-?>
- <td>{{$num=+1}}</td>
-<td>{{$data}}</td>
-<td>{{$name}}</td>
-<td>{{$sum}}</td>
-<td>{{$from[0]}}</td>
-<td>{{$to[0]}}</td>
-   <td>{{$present}}</td>
-   <td>{{$pertentage}}%</td>
-   <td>
-   <a href="{{'send-watsapp/'.$message.'/'.$pertentage.'/'.$subject_id}}"><button type="button"  class="btn btn-sm btn-success" title="Send WhatsApp Message"><i class="bi bi-whatsapp"></i> Message</button></a>
-   </td>
-</tr>
-   @endforeach
+                        <tr>
+                        <?php
+                        $sum=0;
+                        $present=0;
+                        $enter=0;
+                        $date=[];
+                        foreach ($student as $d) {
+                            if ($d->student->enrollment_number == $data && $d->staff_id == $id) {
+                                $date[]=$d->created_at;
+                                $sum++;
+                                $to=explode(" ",$d->created_at);
+                                $name=$d->student->name;
+                                $message=$d->student->student_id;
+                                if($d->attendance=='present'){
+                                    $present++;
+                                }
+                            }
+                        }
+                        sort($date);
+                        $from=$date[0];
+                        $from=explode(" ",$from);
+                        $to = end($date);
+                        $to=explode(" ",$to);
+                        $pertentage=number_format($present/$sum*100,2);
+                        ?>
+                        <td>{{$num=+1}}</td>
+                        {{-- MODIFIED: Added classes for JS to find these cells --}}
+                        <td class="enrollment-cell">{{$data}}</td>
+                        <td class="name-cell">{{$name}}</td>
+                        <td>{{$sum}}</td>
+                        <td>{{$from[0]}}</td>
+                        <td>{{$to[0]}}</td>
+                        <td>{{$present}}</td>
+                        <td>{{$pertentage}}%</td>
+                      
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
+            {{-- MODIFIED: Added a message for when search yields no results --}}
+            <div id="noResultsMessage" class="text-center p-4" style="display: none;">
+                <p class="text-muted mb-0">No matching records found.</p>
+            </div>
         </div>
-        {{-- Pagination for $attendance_summary if implemented in controller --}}
     </div>
-    @elseif(request('subject')) {{-- A subject was selected, but no data found --}}
+    @elseif(request('subject'))
         <div class="alert alert-warning text-center mt-4 py-4">
             <h4 class="alert-heading"><i class="bi bi-info-circle-fill me-2"></i>No Attendance Data</h4>
             <p>No attendance records found for the selected subject. Please ensure attendance has been taken.</p>
         </div>
-    @else {{-- No subject selected yet --}}
+    @else
         <div class="alert alert-info text-center mt-4 py-4">
             <p><i class="bi bi-info-circle-fill me-2"></i>Please select a subject from the dropdown above to view the attendance list.</p>
         </div>
     @endif
 </div>
 @endsection
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('liveSearchInput');
+    const tableBody = document.getElementById('attendanceTableBody');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const enrollmentHeader = document.getElementById('enrollmentHeader');
+
+    // Ensure the table body exists before adding listeners
+    if (tableBody) {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        let sortDirection = 'none'; // 'asc', 'desc', 'none'
+
+        // 1. Live Search Functionality
+        if(searchInput) {
+            searchInput.addEventListener('keyup', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                let visibleRows = 0;
+
+                rows.forEach(row => {
+                    const enrollment = row.querySelector('.enrollment-cell')?.textContent.toLowerCase() || '';
+                    const name = row.querySelector('.name-cell')?.textContent.toLowerCase() || '';
+
+                    if (enrollment.includes(searchTerm) || name.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleRows++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show or hide the "no results" message
+                noResultsMessage.style.display = visibleRows === 0 ? '' : 'none';
+            });
+        }
+
+        // 2. Sorting Functionality for Enrollment Number
+        if (enrollmentHeader) {
+            enrollmentHeader.addEventListener('click', () => {
+                const headerIcon = enrollmentHeader.querySelector('i');
+                // Determine new sort direction
+                if (sortDirection === 'asc') {
+                    sortDirection = 'desc';
+                    headerIcon.className = 'bi bi-arrow-down small';
+                } else {
+                    sortDirection = 'asc';
+                    headerIcon.className = 'bi bi-arrow-up small';
+                }
+
+                // Get rows to sort from the DOM
+                const rowsToSort = Array.from(tableBody.querySelectorAll('tr'));
+
+                rowsToSort.sort((a, b) => {
+                    const valA = a.querySelector('.enrollment-cell')?.textContent.trim() || '';
+                    const valB = b.querySelector('.enrollment-cell')?.textContent.trim() || '';
+
+                    // Use localeCompare for proper string/numeric sorting
+                    const comparison = valA.localeCompare(valB, undefined, { numeric: true });
+
+                    return sortDirection === 'asc' ? comparison : -comparison;
+                });
+
+                // Re-append sorted rows to the table body
+                rowsToSort.forEach(row => tableBody.appendChild(row));
+            });
+        }
+    }
+});
+</script>

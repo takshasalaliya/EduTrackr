@@ -109,6 +109,7 @@ Route::get('/delete_staff/{id}',[CounselorController::class,'delete_staff']);
 Route::post('/optionalgroup',[CounselorController::class,'optional']);
 Route::get('/optionalgroup',[CounselorController::class,'optionalgroup']);
 Route::get('/optionallist',[CounselorController::class,'optional_list']);
+Route::get('filter_optionalsuject',[CounselorController::class,'filter_optionalsuject']);
 Route::get('/delete_optional/{id}',[CounselorController::class,'delete_optional']);
 Route::get('/search_student',[CounselorController::class,'search_student']);
 Route::get('/reader',[CounselorController::class,'dashboard_teacher']);
@@ -131,6 +132,7 @@ Route::get('/counselor/activity/participation/delete/{id}',[CounselorController:
 Route::get('/filter/date',[CounselorController::class,'filterdate']);
 Route::get('/generate_excel_studentclass/{to}/{from}',[CounselorController::class,'studentclassexcel']);
 Route::get('/counselor/student-attendance-detail/{id}',[CounselorController::class,'student_attendance_detail']);
+Route::get('/student-detailemail/{id}',[CounselorController::class,'student_detailemail']);
 });
 
 Route::middleware(['Teacher:reader'])->group(function(){
@@ -162,4 +164,4 @@ Route::view('login','login');
 Route::post('loginMatch',[AdminController::class,'login']);
 Route::get('logout',[AdminController::class,'logout']);
 // Route::view('pdfview','teacher/pdf_attendent');
-
+Route::get('/student-detail/{id}',[UserController::class,'student_detail']);

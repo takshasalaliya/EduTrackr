@@ -276,7 +276,7 @@
             </li>
             <li>
                 <a href="#attendanceSubmenu" data-bs-toggle="collapse" class="nav-link {{ Request::is('select_counselor', 'attendent_list_counselor') ? 'active' : '' }}" aria-expanded="{{ Request::is('select_counselor', 'attendent_list_counselor') ? 'true' : 'false' }}">
-                    <i class="bi bi-calendar-check-fill"></i> <span class="ms-1">Subject Attendance</span>
+                    <i class="bi bi-calendar-check-fill"></i> <span class="ms-1">Take Attendance</span>
                 </a>
                 <ul class="collapse nav flex-column ms-1 {{ Request::is('select_counselor', 'attendent_list_counselor') ? 'show' : '' }}" id="attendanceSubmenu" data-bs-parent="#sidebar">
                     <li><a href="/select_counselor" class="nav-link {{ Request::is('select_counselor') ? 'active' : '' }}"><i class="bi bi-calendar-plus-fill"></i> <span class="ms-1">Add</span></a></li>

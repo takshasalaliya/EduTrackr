@@ -106,6 +106,13 @@
 </style>
 
 <div class="container-fluid">
+    {{-- NEW: Take Attendance Shortcut Button --}}
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{{ url('/select_counselor') }}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-calendar-check-fill me-2"></i>Take Attendance
+        </a>
+    </div>
+
     {{-- Top Stat Cards --}}
     <div class="row g-4">
         <div class="col-xl-3 col-md-6">

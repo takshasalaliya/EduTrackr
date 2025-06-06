@@ -42,7 +42,7 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label for="filter_program_counselor" class="form-label">Program (Your Classes)</label>
-                        <select name="field" id="filter_program_counselor" class="form-select" onchange="document.getElementById('filterOptionalSubjectFormCounselor').submit()">
+                        <select name="field" id="filter_program_counselor" class="form-select" onchange="   cument.getElementById('filterOptionalSubjectFormCounselor').submit()">
                             <option value="">Select Program</option>
                             {{-- $programs_counselor should contain distinct programs from classes counseled by Auth::user() --}}
                             @if(isset($programs))

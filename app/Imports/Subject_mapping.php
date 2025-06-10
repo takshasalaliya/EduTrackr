@@ -21,15 +21,21 @@ class Subject_mapping implements ToCollection,ToModel
     }
     public function model(array $row){
         try{
+            // dd($row);
         $this->current++;
         if( $this->current>1){
             $short=explode('/',$row[2]);
             foreach($short as $name){
                 $user=User::where('short_name',$name)->first();
+                $validdata=Teaching_staff::where('subject_id',$row[0])->where('staff_id',$user->id)->first();
+                // dd($validdata);
+                if(empty($validdata)){
+                // dd($row);
                 $subject= new Teaching_staff();
                 $subject->subject_id=$row[0];
                 $subject->staff_id=$user->id;
                 $subject->save();
+                }
             }
         }
     }catch (\Throwable $e) {

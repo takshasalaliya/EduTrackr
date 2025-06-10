@@ -133,6 +133,8 @@ Route::get('/filter/date',[CounselorController::class,'filterdate']);
 Route::get('/generate_excel_studentclass/{to}/{from}',[CounselorController::class,'studentclassexcel']);
 Route::get('/counselor/student-attendance-detail/{id}',[CounselorController::class,'student_attendance_detail']);
 Route::get('/student-detailemail/{id}',[CounselorController::class,'student_detailemail']);
+Route::get('/excel_dowload_counselor/{id}',[CounselorController::class,'excel_dowload_counselor']);
+Route::post('/counselor/optional-subject/upload',[CounselorController::class,'optional_subject_upload']);
 });
 
 Route::middleware(['Teacher:reader'])->group(function(){

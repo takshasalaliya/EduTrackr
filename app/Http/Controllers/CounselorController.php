@@ -26,6 +26,9 @@ use App\Exports\StudentClass;
 use App\Models\Gcode;
 use App\Models\Duplicated;
 use App\Models\Activity;
+use App\Exports\OptionalSubject;
+use App\Imports\OptionalImport;
+
 
 class CounselorController extends Controller
 {
@@ -434,6 +437,7 @@ class CounselorController extends Controller
             $id=[];
             $student=[];
             $optional=[];
+            $class_id_for_download=[];
             $program=Student_class::with('program')->get();
             if($request->has(['field']) && !$request->field == ""){
                 $sem=Student_class::where('stream',$request->field)->get();
@@ -450,6 +454,7 @@ class CounselorController extends Controller
                     if(!empty($id)){
                         $subject=Subject::where('class_id',$id->id)->where('category','optional')->get();
                         $student=Student::where('class_id',$id->id)->get();
+                        $class_id_for_download=$id->id;
                     }
                 }
                 $valid=1;
@@ -463,6 +468,7 @@ class CounselorController extends Controller
                 'subject' => $subject,
                 'students' => $student,
                 'programs'=>$program,
+                'class_id_for_download' => $class_id_for_download,
             ]);
         } catch (\Throwable $e) {
             return redirect()->back()->with('error','Error: '.$e->getMessage());
@@ -1189,5 +1195,28 @@ $activity = Activity::where('std_id', $student->student_id)
 }catch (\Throwable $e) {
     return redirect()->back()->with('error','Error: '.$e->getMessage());
 }
+    }
+
+
+    function excel_dowload_counselor($id){
+        try{
+            return Excel::download(new OptionalSubject($id),'optional.xlsx');
+        }catch (\Throwable $e) {
+            return redirect()->back()->with('error','Error: '.$e->getMessage());
+        }
+        
+    }
+
+    function optional_subject_upload(Request $request){
+        try{
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,csv,xls'
+            ]);
+            Excel::import(new OptionalImport,$request->file);
+            return redirect()
+            ->back()->with('success', 'Maping added successfully!');   
+        }catch (\Throwable $e) {
+            return redirect()->back()->with('error','Error: '.$e->getMessage());
+        }
     }
 }
